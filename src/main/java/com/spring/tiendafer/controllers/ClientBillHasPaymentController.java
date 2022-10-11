@@ -21,5 +21,4 @@ public class ClientBillHasPaymentController {
 	//Declaracion de variables
 	@Autowired
 	private ClientBillHasPaymentRepository clientBillHasPaymentRepository;
-	private int numero
 }
