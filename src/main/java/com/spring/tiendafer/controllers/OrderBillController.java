@@ -38,11 +38,18 @@ public class OrderBillController {
 	private SupplierRepository supplierRepository;
 
 	//Metodos propios
+	/**
+	 * @return allClientBill existing in DB
+	 */
 	@GetMapping("")
 	public List<OrderBill> findAll(){
 		return orderBillRepository.findAll();
 	}
 
+	/**
+	 * @param id => ClientBill id that you want to find, it comes from URL
+	 * @return ClientBill with id received
+	 */
 	@GetMapping("{id}")
 	public OrderBill findById(@PathVariable int id) {
 		OrderBill orderBill = orderBillRepository.findById(id).orElse(null);
@@ -52,6 +59,11 @@ public class OrderBillController {
 		return null;
 	}
 
+	/**
+	 * @param orderBill => OrderBill Object that contains total value and date
+	 * @param id_supplier => Supplier id that you want to include in OrderBill, it comes from URL
+	 * @return OrderBill created
+	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
 	@PostMapping("/supplier/{id_supplier}")
 	public OrderBill create(@RequestBody OrderBill orderBill, @PathVariable BigInteger id_supplier) {
@@ -62,7 +74,30 @@ public class OrderBillController {
 		}
 		return null;
 	}
+	
+	/**
+	 * @param idOrderBill => ClientBill id that you want to update, it comes from URL
+	 * @param newOrderBill => OrderBill Object that contains new total value and date
+	 * @param idSupplier => Supplier id that you want to update in OrderBill, it comes from URL
+	 * @return ClientBill updated
+	 */
+	@ResponseStatus(code = HttpStatus.CREATED)
+	@PostMapping("/supplier/{idSupplier}")
+	public OrderBill update(@PathVariable int idOrderBill, @RequestBody OrderBill newOrderBill, @PathVariable BigInteger idSupplier) {
+		Supplier supplier = supplierRepository.findById(idSupplier).orElse(null);
+		OrderBill orderBill = orderBillRepository.findById(idOrderBill).orElse(null);
+		if(newOrderBill != null && supplier != null && orderBill != null) {
+			orderBill.setTotalValue(newOrderBill.getTotalValue());
+			orderBill.setDate(newOrderBill.getDate());
+			orderBill.setSupplier(supplier);
+			return orderBillRepository.save(newOrderBill);
+		}
+		return null;
+	}
 
+	/**
+	 * @param id => ClientBill id that you want to delete, it comes from URL
+	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
 	public void delete(@PathVariable int id) {

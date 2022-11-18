@@ -35,11 +35,18 @@ public class ClientController {
 	private ClientRepository clientRepository;
 
 	//Metodos propios
+	/**
+	 * @return All Clients existing in DB
+	 */
 	@GetMapping("")
 	public List<Client> findAll(){
 		return clientRepository.findAll();
 	}
 	
+	/**
+	 * @param id => Client id that you want to find, it comes from URL
+	 * @return Client with id received
+	 */
 	@GetMapping("{id}")
 	public Client findById(@PathVariable BigInteger id) {
 		Client client = clientRepository.findById(id).orElse(null);
@@ -49,6 +56,10 @@ public class ClientController {
 		return null;
 	}
 	
+	/**
+	 * @param client => Client Object that contains the client name
+	 * @return Client created
+	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
 	@PostMapping("")
 	public Client create(@RequestBody Client client) {
@@ -58,6 +69,12 @@ public class ClientController {
 		return null;
 	}
 	
+	
+	/**
+	 * @param id => Client id that you want to update, it comes from URL
+	 * @param newClient => Client Object that contains the new client name
+	 * @return Client updated
+	 */
 	@PutMapping("{id}")
 	public Client update(@PathVariable BigInteger id, @RequestBody Client newClient) {
 		Client client = clientRepository.findById(id).orElse(null);
@@ -68,6 +85,9 @@ public class ClientController {
 		return null;
 	}
 
+	/**
+	 * @param id => Client id that you want to delete, it comes from URL
+	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
 	public void delete(@PathVariable BigInteger id) {

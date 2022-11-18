@@ -32,47 +32,66 @@ public class SectionController {
 	//Declaracion de variables
 	@Autowired
 	private SectionRepository sectionRepository;
-	
+
 	//Metodos propios
-		@GetMapping("")
-		public List<Section> findAll(){
-			return sectionRepository.findAll();
+	/**
+	 * @return All Sections existing in DB
+	 */
+	@GetMapping("")
+	public List<Section> findAll(){
+		return sectionRepository.findAll();
+	}
+
+	/**
+	 * @param id => Section id that you want to find, it comes from URL
+	 * @return Section with id received
+	 */
+	@GetMapping("{id}")
+	public Section findById(@PathVariable int id) {
+		Section section = sectionRepository.findById(id).orElse(null);
+		if(section != null) {
+			return section;
 		}
-		
-		@GetMapping("{id}")
-		public Section findById(@PathVariable int id) {
-			Section section = sectionRepository.findById(id).orElse(null);
-			if(section != null) {
-				return section;
-			}
-			return null;
+		return null;
+	}
+
+	/**
+	 * @param section => Section Object that contains the section name
+	 * @return Section created
+	 */
+	@ResponseStatus(code = HttpStatus.CREATED)
+	@PostMapping("")
+	public Section create(@RequestBody Section section) {
+		if(section != null) {
+			return sectionRepository.save(section);
 		}
-		
-		@ResponseStatus(code = HttpStatus.CREATED)
-		@PostMapping("")
-		public Section create(@RequestBody Section section) {
-			if(section != null) {
-				return sectionRepository.save(section);
-			}
-			return null;
+		return null;
+	}
+
+	/**
+	 * @param id => Section id that you want to update, it comes from URL
+	 * @param newSection => Section Object that contains the new section name
+	 * @return Section created
+	 */
+	@PutMapping("{id}")
+	public Section update(@PathVariable int id, @RequestBody Section newSection) {
+		Section section = sectionRepository.findById(id).orElse(null);
+		if(section != null && newSection != null) {
+			section.setName(newSection.getName());
+			return sectionRepository.save(section);
 		}
-		
-		@PutMapping("{id}")
-		public Section update(@PathVariable int id, @RequestBody Section newSection) {
-			Section section = sectionRepository.findById(id).orElse(null);
-			if(section != null && newSection != null) {
-				section.setName(newSection.getName());
-				return sectionRepository.save(section);
-			}
-			return null;
+		return null;
+	}
+
+	/**
+	 * @param id => Section id that you want to delete, it comes from URL
+	 */
+	@ResponseStatus(code = HttpStatus.NO_CONTENT)
+	@DeleteMapping("{id}")
+	public void delete(@PathVariable int id) {
+		Section section = sectionRepository.findById(id).orElse(null);
+		if(section != null) {
+			sectionRepository.deleteById(id);
 		}
-		
-		@ResponseStatus(code = HttpStatus.NO_CONTENT)
-		@DeleteMapping("{id}")
-		public void delete(@PathVariable int id) {
-			Section section = sectionRepository.findById(id).orElse(null);
-			if(section != null) {
-				sectionRepository.deleteById(id);
-			}
-		}
+	}
 }

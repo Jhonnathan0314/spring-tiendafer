@@ -38,11 +38,18 @@ public class ProductController {
 	private SectionRepository sectionRepository;
 
 	//Metodos propios
+	/**
+	 * @return All Products existing in DB
+	 */
 	@GetMapping("")
 	public List<Product> findAll(){
 		return productRepository.findAll();
 	}
 
+	/**
+	 * @param id => Product id that you want to find, it comes from URL
+	 * @return Product with id received
+	 */
 	@GetMapping("{id}")
 	public Product findById(@PathVariable int id) {
 		Product product = productRepository.findById(id).orElse(null);
@@ -52,10 +59,15 @@ public class ProductController {
 		return null;
 	}
 
+	/**
+	 * @param product => Product Object that contains the product name, quantity available and sale value
+	 * @param idSection => Section id that you want to set in Product, it comes from URL
+	 * @return Product created
+	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/section/{id_section}")
-	public Product create(@RequestBody Product product, @PathVariable int id_section) {
-		Section section = sectionRepository.findById(id_section).orElse(null);
+	@PostMapping("/section/{idSection}")
+	public Product create(@RequestBody Product product, @PathVariable int idSection) {
+		Section section = sectionRepository.findById(idSection).orElse(null);
 		if(product != null && section != null) {
 			product.setSection(section);
 			return productRepository.save(product);
@@ -63,10 +75,16 @@ public class ProductController {
 		return null;
 	}
 
-	@PutMapping("/{id}/section/{id_section}")
-	public Product update(@PathVariable int id, @RequestBody Product newProduct, @PathVariable int id_section) {
+	/**
+	 * @param id => Product id that you want to update, it comes from URL
+	 * @param newProduct => Product Object that contains the new product name, quantity available and sale value
+	 * @param idSection => Section id that you want to update in Product, it comes from URL
+	 * @return Product updated
+	 */
+	@PutMapping("/{id}/section/{idSection}")
+	public Product update(@PathVariable int id, @RequestBody Product newProduct, @PathVariable int idSection) {
 		Product product = productRepository.findById(id).orElse(null);
-		Section section = sectionRepository.findById(id_section).orElse(null);
+		Section section = sectionRepository.findById(idSection).orElse(null);
 		if(product != null && newProduct != null && section != null) {
 			product.setName(newProduct.getName());
 			product.setQuantityAvailable(newProduct.getQuantityAvailable());
@@ -77,6 +95,9 @@ public class ProductController {
 		return null;
 	}
 
+	/**
+	 * @param id => Product id that you want to delete, it comes from URL
+	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
 	public void delete(@PathVariable int id) {

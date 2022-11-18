@@ -42,11 +42,18 @@ public class DetailClientBillController {
 	private ClientBillRepository clientBillRepository;
 
 	//Metodos propios
+	/**
+	 * @return allDetailClientBill existing in DB
+	 */
 	@GetMapping("")
 	public List<DetailClientBill> findAll(){
 		return detailClientBillRepository.findAll();
 	}
 
+	/**
+	 * @param id => detailClientBill id that you want to find, it comes from URL
+	 * @return DetailClientBill with id received
+	 */
 	@GetMapping("{id}")
 	public DetailClientBill findById(@PathVariable int id) {
 		DetailClientBill detailClientBill = detailClientBillRepository.findById(id).orElse(null);
@@ -56,26 +63,39 @@ public class DetailClientBillController {
 		return null;
 	}
 
+	/**
+	 * @param detailClientBill => detailClientBill Object that contains quantity, unit value and total value (quantity * unit value)
+	 * @param idProduct => Product id that you want to include in detailClientBill, it comes from URL
+	 * @param idClientBill => ClientBill id that you want to include in detailClientBill, it comes from URL
+	 * @return DetailClientBill created
+	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/product/{id_product}/orderbill/{id_order_bill}")
+	@PostMapping("/product/{idProduct}/clientbill/{idClientBill}")
 	public DetailClientBill create(@RequestBody DetailClientBill detailClientBill, 
-			@PathVariable int id_product, @PathVariable int id_order_bill) {
-		Product product = productRepository.findById(id_product).orElse(null);
-		ClientBill clientBill = clientBillRepository.findById(id_order_bill).orElse(null);
+			@PathVariable int idProduct, @PathVariable int idClientBill) {
+		Product product = productRepository.findById(idProduct).orElse(null);
+		ClientBill clientBill = clientBillRepository.findById(idClientBill).orElse(null);
 		if(detailClientBill != null && product != null && clientBill != null) {
 			detailClientBill.setProduct(product);
 			detailClientBill.setClientBill(clientBill);
-			return detailClientBillRepository.save(detailClientBill);
+			return updateDetailClientBill(detailClientBill, product, clientBill);
 		}
 		return null;
 	}
 
-	@PutMapping("/{id}/product/{id_product}/orderbill/{id_order_bill}")
+	/**
+	 * @param id => DetailClientBill id that you want to update, it comes from URL
+	 * @param newDetailClientBill => detailClientBill Object that contains the new quantity, unit value and total value (quantity * unit value)
+	 * @param idProduct => Product id that you want to update in detailClientBill, it comes from URL
+	 * @param idClientBill => ClientBill id that you want to update in detailClientBill, it comes from URL
+	 * @return DetailClientBill updated
+	 */
+	@PutMapping("/{id}/product/{idProduct}/clientbill/{idClientBill}")
 	public DetailClientBill update(@PathVariable int id, @RequestBody DetailClientBill newDetailClientBill,
-			@PathVariable int id_product, @PathVariable int id_order_bill) {
+			@PathVariable int idProduct, @PathVariable int idClientBill) {
 		DetailClientBill detailClientBill = detailClientBillRepository.findById(id).orElse(null);
-		Product product = productRepository.findById(id_product).orElse(null);
-		ClientBill clientBill = clientBillRepository.findById(id_order_bill).orElse(null);
+		Product product = productRepository.findById(idProduct).orElse(null);
+		ClientBill clientBill = clientBillRepository.findById(idClientBill).orElse(null);
 		if(newDetailClientBill != null && detailClientBill != null && product != null && clientBill != null) {
 			detailClientBill.setQuantity(newDetailClientBill.getQuantity());
 			detailClientBill.setUnitValue(newDetailClientBill.getUnitValue());
@@ -87,6 +107,9 @@ public class DetailClientBillController {
 		return null;
 	}
 
+	/**
+	 * @param id => detailClientBill id that you want to delete, it comes from URL
+	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
 	public void delete(@PathVariable int id) {
@@ -94,5 +117,21 @@ public class DetailClientBillController {
 		if(detailClientBill != null) {
 			detailClientBillRepository.deleteById(id);
 		}
+	}
+	
+	/**
+	 * @param detailClientBill => DetailClientBill object that comes from create method
+	 * @param product => Product object that comes from create method
+	 * @param clientBill => ClientBill object that comes from create method
+	 * @return DetailClientBill updated
+	 */
+	private DetailClientBill updateDetailClientBill(DetailClientBill detailClientBill, Product product, ClientBill clientBill) {
+		product.setQuantityAvailable(product.getQuantityAvailable() - detailClientBill.getQuantity());
+		Product answerProduct = productRepository.save(product);
+		clientBill.setTotalValue(clientBill.getTotalValue() + detailClientBill.getTotalValue());
+		ClientBill clientBillAnswer = clientBillRepository.save(clientBill);
+		detailClientBill.setProduct(answerProduct);
+		detailClientBill.setClientBill(clientBillAnswer);
+		return detailClientBillRepository.save(detailClientBill);
 	}
 }

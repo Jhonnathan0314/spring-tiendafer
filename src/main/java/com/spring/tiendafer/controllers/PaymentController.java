@@ -38,11 +38,19 @@ public class PaymentController {
 	private ClientRepository clientRepository;
 
 	//Metodos propios
+	/**
+	 * @return all Payments existing in DB
+	 */
 	@GetMapping("")
 	public List<Payment> findAll(){
 		return paymentRepository.findAll();
 	}
 
+	
+	/**
+	 * @param id => Payment id that you want to find, it comes from URL
+	 * @return
+	 */
 	@GetMapping("{id}")
 	public Payment findById(@PathVariable int id) {
 		Payment payment = paymentRepository.findById(id).orElse(null);
@@ -52,6 +60,12 @@ public class PaymentController {
 		return null;
 	}
 
+	
+	/**
+	 * @param payment => Payment Object that contains date and cash
+	 * @param id_client => Client id that you want to include in Payment, it comes from URL
+	 * @return Payment created
+	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
 	@PostMapping("/client/{id_client}")
 	public Payment create(@RequestBody Payment payment, @PathVariable BigInteger id_client) {
@@ -62,7 +76,28 @@ public class PaymentController {
 		}
 		return null;
 	}
+	
+	/**
+	 * @param idPayment => Payment id that you want to update, it comes from URL
+	 * @param payment => Payment Object that contains new date and cash
+	 * @param id_client => Client id that you want to update in Payment, it comes from URL
+	 * @return Payment updated
+	 */
+	@ResponseStatus(code = HttpStatus.CREATED)
+	@PostMapping("{idPayment}/client/{id_client}")
+	public Payment update(@PathVariable int idPayment, @RequestBody Payment payment, @PathVariable BigInteger id_client) {
+		Client client = clientRepository.findById(id_client).orElse(null);
+		if(payment != null && client != null) {
+			payment.setClient(client);
+			return paymentRepository.save(payment);
+		}
+		return null;
+	}
 
+	
+	/**
+	 * @param id => Payment id that you want to delete, it comes from URL
+	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
 	public void delete(@PathVariable int id) {

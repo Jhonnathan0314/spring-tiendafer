@@ -19,14 +19,14 @@ public class ClientBill {
 	//Declaracion de variables
 	@Id
 	private int idClientBill;
-	private int totalValue;
+	private float totalValue;
 	private String date;
 	@OneToOne
 	@JoinColumn(name = "id_client")
 	private Client client;
 	
 	//Metodo constructor
-	public ClientBill(int idClientBill, int totalValue, String date, Client client) {
+	public ClientBill(int idClientBill, float totalValue, String date, Client client) {
 		super();
 		this.idClientBill = idClientBill;
 		this.totalValue = totalValue;
@@ -47,11 +47,11 @@ public class ClientBill {
 		this.idClientBill = idClientBill;
 	}
 
-	public int getTotalValue() {
+	public float getTotalValue() {
 		return totalValue;
 	}
 
-	public void setTotalValue(int totalValue) {
+	public void setTotalValue(float totalValue) {
 		this.totalValue = totalValue;
 	}
 

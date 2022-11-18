@@ -35,11 +35,18 @@ public class SupplierController {
 	private SupplierRepository supplierRepository;
 
 	//Metodos propios
+	/**
+	 * @return All Suppliers existing in DB
+	 */
 	@GetMapping("")
 	public List<Supplier> findAll(){
 		return supplierRepository.findAll();
 	}
 
+	/**
+	 * @param id => Supplier id that you want to find, it comes from URL
+	 * @return Supplier with id received
+	 */
 	@GetMapping("{id}")
 	public Supplier findById(@PathVariable BigInteger id) {
 		Supplier supplier = supplierRepository.findById(id).orElse(null);
@@ -49,6 +56,10 @@ public class SupplierController {
 		return null;
 	}
 
+	/**
+	 * @param supplier => Supplier Object that contains the supplier name
+	 * @return Supplier created
+	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
 	@PostMapping("")
 	public Supplier create(@RequestBody Supplier supplier) {
@@ -58,6 +69,11 @@ public class SupplierController {
 		return null;
 	}
 
+	/**
+	 * @param id => Supplier id that you want to update, it comes from URL
+	 * @param newSupplier => Supplier Object that contains the new supplier name
+	 * @return Supplier updated
+	 */
 	@PutMapping("{id}")
 	public Supplier update(@PathVariable BigInteger id, @RequestBody Supplier newSupplier) {
 		Supplier supplier = supplierRepository.findById(id).orElse(null);
@@ -69,6 +85,9 @@ public class SupplierController {
 		return null;
 	}
 
+	/**
+	 * @param id => Supplier id that you want to delete, it comes from URL
+	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
 	public void delete(@PathVariable BigInteger id) {
