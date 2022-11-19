@@ -78,7 +78,7 @@ public class DetailClientBillController {
 		if(detailClientBill != null && product != null && clientBill != null) {
 			detailClientBill.setProduct(product);
 			detailClientBill.setClientBill(clientBill);
-			return updateDetailClientBill(detailClientBill, product, clientBill);
+			return createDetailClientBill(detailClientBill, product, clientBill);
 		}
 		return null;
 	}
@@ -97,12 +97,7 @@ public class DetailClientBillController {
 		Product product = productRepository.findById(idProduct).orElse(null);
 		ClientBill clientBill = clientBillRepository.findById(idClientBill).orElse(null);
 		if(newDetailClientBill != null && detailClientBill != null && product != null && clientBill != null) {
-			detailClientBill.setQuantity(newDetailClientBill.getQuantity());
-			detailClientBill.setUnitValue(newDetailClientBill.getUnitValue());
-			detailClientBill.setTotalValue(newDetailClientBill.getTotalValue());
-			detailClientBill.setProduct(product);
-			detailClientBill.setClientBill(clientBill);
-			return detailClientBillRepository.save(detailClientBill);
+			return updateDetailClientBill(detailClientBill, newDetailClientBill, product, clientBill);
 		}
 		return null;
 	}
@@ -112,11 +107,14 @@ public class DetailClientBillController {
 	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public void delete(@PathVariable int id) {
+	public boolean delete(@PathVariable int id) {
 		DetailClientBill detailClientBill = detailClientBillRepository.findById(id).orElse(null);
 		if(detailClientBill != null) {
+			deleteBillProduct(detailClientBill);
 			detailClientBillRepository.deleteById(id);
+			return true;
 		}
+		return false;
 	}
 	
 	/**
@@ -125,7 +123,7 @@ public class DetailClientBillController {
 	 * @param clientBill => ClientBill object that comes from create method
 	 * @return DetailClientBill updated
 	 */
-	private DetailClientBill updateDetailClientBill(DetailClientBill detailClientBill, Product product, ClientBill clientBill) {
+	private DetailClientBill createDetailClientBill(DetailClientBill detailClientBill, Product product, ClientBill clientBill) {
 		product.setQuantityAvailable(product.getQuantityAvailable() - detailClientBill.getQuantity());
 		Product answerProduct = productRepository.save(product);
 		clientBill.setTotalValue(clientBill.getTotalValue() + detailClientBill.getTotalValue());
@@ -133,5 +131,36 @@ public class DetailClientBillController {
 		detailClientBill.setProduct(answerProduct);
 		detailClientBill.setClientBill(clientBillAnswer);
 		return detailClientBillRepository.save(detailClientBill);
+	}
+	
+	/**
+	 * @param detailClientBill => DetailClientBill object that comes from create method
+	 * @param product => Product object that comes from create method
+	 * @param clientBill => ClientBill object that comes from create method
+	 * @return DetailClientBill updated
+	 */
+	private DetailClientBill updateDetailClientBill(DetailClientBill detailClientBill, DetailClientBill newDetailClientBill, Product product, ClientBill clientBill) {
+		product.setQuantityAvailable(product.getQuantityAvailable() + detailClientBill.getQuantity() - newDetailClientBill.getQuantity());
+		Product answerProduct = productRepository.save(product);
+		clientBill.setTotalValue(clientBill.getTotalValue() + newDetailClientBill.getTotalValue() - detailClientBill.getTotalValue());
+		ClientBill clientBillAnswer = clientBillRepository.save(clientBill);
+		detailClientBill.setProduct(answerProduct);
+		detailClientBill.setClientBill(clientBillAnswer);
+		detailClientBill.setQuantity(newDetailClientBill.getQuantity());
+		detailClientBill.setUnitValue(newDetailClientBill.getUnitValue());
+		detailClientBill.setTotalValue(newDetailClientBill.getTotalValue());
+		return detailClientBillRepository.save(detailClientBill);
+	}
+	
+	/**
+	 * @param detailClientBill => DetailClientBill object to be deleted
+	 */
+	private void deleteBillProduct(DetailClientBill detailClientBill) {
+		Product product = productRepository.findById(detailClientBill.getProduct().getIdProduct()).orElse(null);
+		product.setQuantityAvailable(product.getQuantityAvailable() + detailClientBill.getQuantity());
+		productRepository.save(product);
+		ClientBill clientBill = clientBillRepository.findById(detailClientBill.getClientBill().getIdClientBill()).orElse(null);
+		clientBill.setTotalValue(clientBill.getTotalValue() - detailClientBill.getTotalValue());
+		clientBillRepository.save(clientBill);
 	}
 }

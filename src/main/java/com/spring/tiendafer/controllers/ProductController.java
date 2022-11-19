@@ -100,10 +100,12 @@ public class ProductController {
 	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public void delete(@PathVariable int id) {
+	public boolean delete(@PathVariable int id) {
 		Product product = productRepository.findById(id).orElse(null);
 		if(product != null) {
 			productRepository.deleteById(id);
+			return true;
 		}
+		return false;
 	}
 }

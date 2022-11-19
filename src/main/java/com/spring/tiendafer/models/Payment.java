@@ -4,6 +4,8 @@
 package com.spring.tiendafer.models;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -18,19 +20,21 @@ import javax.persistence.Table;
 public class Payment {
 	//Declaracion de variables
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int idPayment;
 	private String date;
 	private int cash;
+	private int changeMoney;
 	@OneToOne
 	@JoinColumn(name = "id_client")
 	private Client client;
 
 	//Metodo constructor
-	public Payment(int idPayment, String date, int cash, Client client) {
+	public Payment(String date, int cash, int changeMoney, Client client) {
 		super();
-		this.idPayment = idPayment;
 		this.date = date;
 		this.cash = cash;
+		this.changeMoney = changeMoney;
 		this.client = client;
 	}
 
@@ -61,6 +65,14 @@ public class Payment {
 
 	public void setCash(int cash) {
 		this.cash = cash;
+	}
+
+	public int getChangeMoney() {
+		return changeMoney;
+	}
+
+	public void setChangeMoney(int changeMoney) {
+		this.changeMoney = changeMoney;
 	}
 
 	public Client getClient() {

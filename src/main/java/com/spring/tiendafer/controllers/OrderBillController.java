@@ -74,36 +74,18 @@ public class OrderBillController {
 		}
 		return null;
 	}
-	
-	/**
-	 * @param idOrderBill => ClientBill id that you want to update, it comes from URL
-	 * @param newOrderBill => OrderBill Object that contains new total value and date
-	 * @param idSupplier => Supplier id that you want to update in OrderBill, it comes from URL
-	 * @return ClientBill updated
-	 */
-	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/supplier/{idSupplier}")
-	public OrderBill update(@PathVariable int idOrderBill, @RequestBody OrderBill newOrderBill, @PathVariable BigInteger idSupplier) {
-		Supplier supplier = supplierRepository.findById(idSupplier).orElse(null);
-		OrderBill orderBill = orderBillRepository.findById(idOrderBill).orElse(null);
-		if(newOrderBill != null && supplier != null && orderBill != null) {
-			orderBill.setTotalValue(newOrderBill.getTotalValue());
-			orderBill.setDate(newOrderBill.getDate());
-			orderBill.setSupplier(supplier);
-			return orderBillRepository.save(newOrderBill);
-		}
-		return null;
-	}
 
 	/**
 	 * @param id => ClientBill id that you want to delete, it comes from URL
 	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public void delete(@PathVariable int id) {
+	public boolean delete(@PathVariable int id) {
 		OrderBill orderBill = orderBillRepository.findById(id).orElse(null);
 		if(orderBill != null) {
 			orderBillRepository.deleteById(id);
+			return true;
 		}
+		return false;
 	}
 }

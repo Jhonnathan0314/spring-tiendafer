@@ -4,6 +4,8 @@
 package com.spring.tiendafer.models;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -18,6 +20,7 @@ import javax.persistence.Table;
 public class OrderBill {
 	//Declaracion de variables
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int idOrderBill;
 	private String date;
 	private int totalValue;
@@ -26,9 +29,8 @@ public class OrderBill {
 	private Supplier supplier;
 	
 	//Metodo constructor
-	public OrderBill(int idOrderBill, String date, int totalValue) {
+	public OrderBill(String date, int totalValue) {
 		super();
-		this.idOrderBill = idOrderBill;
 		this.date = date;
 		this.totalValue = totalValue;
 	}

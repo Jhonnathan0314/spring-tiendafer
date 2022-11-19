@@ -88,10 +88,12 @@ public class SectionController {
 	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public void delete(@PathVariable int id) {
+	public boolean delete(@PathVariable int id) {
 		Section section = sectionRepository.findById(id).orElse(null);
 		if(section != null) {
 			sectionRepository.deleteById(id);
+			return true;
 		}
+		return false;
 	}
 }

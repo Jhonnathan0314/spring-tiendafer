@@ -90,10 +90,12 @@ public class ClientController {
 	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public void delete(@PathVariable BigInteger id) {
+	public boolean delete(@PathVariable BigInteger id) {
 		Client client = clientRepository.findById(id).orElse(null);
 		if(client != null) {
 			clientRepository.deleteById(id);
+			return true;
 		}
+		return false;
 	}
 }

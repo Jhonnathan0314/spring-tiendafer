@@ -90,10 +90,12 @@ public class SupplierController {
 	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public void delete(@PathVariable BigInteger id) {
+	public boolean delete(@PathVariable BigInteger id) {
 		Supplier supplier = supplierRepository.findById(id).orElse(null);
 		if(supplier != null) {
 			supplierRepository.deleteById(id);
+			return true;
 		}
+		return false;
 	}
 }

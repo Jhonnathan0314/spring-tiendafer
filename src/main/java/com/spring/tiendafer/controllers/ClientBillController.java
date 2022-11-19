@@ -58,6 +58,15 @@ public class ClientBillController {
 		}
 		return null;
 	}
+	
+	/**
+	 * @param id => ClientBill id that you want to find, it comes from URL
+	 * @return ClientBill with id received
+	 */
+	@GetMapping("client/{idClient}")
+	public List<ClientBill> findByClient(@PathVariable BigInteger idClient) {
+		return clientBillRepository.findByClient(idClient);
+	}
 
 	/**
 	 * @param clientBill => ClientBill Object that contains total value and date
@@ -75,37 +84,17 @@ public class ClientBillController {
 		return null;
 	}
 	
-	
-	/**
-	 * @param idClientBill => ClientBill id that you want to update, it comes from URL
-	 * @param newClientBill => ClientBill Object that contains new total value and date
-	 * @param idClient => Client id that you want to update in ClientBill, it comes from URL
-	 * @return ClientBill updated
-	 */
-	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/client/{idClient}")
-	public ClientBill update(@PathVariable int idClientBill, @RequestBody ClientBill newClientBill, @PathVariable BigInteger idClient) {
-		Client client = clientRepository.findById(idClient).orElse(null);
-		ClientBill clientBill = clientBillRepository.findById(idClientBill).orElse(null);
-		if(newClientBill != null && client != null && clientBill != null) {
-			clientBill.setTotalValue(newClientBill.getTotalValue());
-			clientBill.setDate(newClientBill.getDate());
-			clientBill.setClient(client);
-			return clientBillRepository.save(newClientBill);
-		}
-		return null;
-	}
-
-	
 	/**
 	 * @param id => ClientBill id that you want to delete, it comes from URL
 	 */
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public void delete(@PathVariable int id) {
+	public boolean delete(@PathVariable int id) {
 		ClientBill clientBill = clientBillRepository.findById(id).orElse(null);
 		if(clientBill != null) {
 			clientBillRepository.deleteById(id);
+			return true;
 		}
+		return false;
 	}
 }
