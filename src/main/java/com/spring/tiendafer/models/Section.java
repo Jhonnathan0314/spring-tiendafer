@@ -3,6 +3,8 @@
  */
 package com.spring.tiendafer.models;
 
+import java.util.Objects;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,12 +21,13 @@ public class Section {
 	//Declaracion de variables
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int idSection;
+	private Integer idSection;
 	private String name;
 
 	//Metodo constructor
 	public Section(String name) {
 		super();
+		idSection = 0;
 		this.name = name;
 	}
 
@@ -47,5 +50,22 @@ public class Section {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(idSection, name);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Section other = (Section) obj;
+		return Objects.equals(idSection, other.idSection) && Objects.equals(name, other.name);
 	}
 }

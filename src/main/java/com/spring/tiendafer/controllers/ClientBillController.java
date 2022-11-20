@@ -7,7 +7,9 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.tiendafer.models.Client;
 import com.spring.tiendafer.models.ClientBill;
+import com.spring.tiendafer.models.DetailClientBill;
 import com.spring.tiendafer.repositories.ClientBillRepository;
 import com.spring.tiendafer.repositories.ClientRepository;
 
@@ -36,6 +39,8 @@ public class ClientBillController {
 	private ClientBillRepository clientBillRepository;
 	@Autowired
 	private ClientRepository clientRepository;
+	@Autowired
+	private DetailClientBillController detailClientBillController;
 
 	//Metodos propios
 	/**
@@ -87,14 +92,24 @@ public class ClientBillController {
 	/**
 	 * @param id => ClientBill id that you want to delete, it comes from URL
 	 */
-	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public boolean delete(@PathVariable int id) {
+	public ResponseEntity<String> delete(@PathVariable int id) {
+		var headers = new HttpHeaders();
+		headers.add("Responded", "ProductController");
+		String body = "Factura no encontrada!";
 		ClientBill clientBill = clientBillRepository.findById(id).orElse(null);
 		if(clientBill != null) {
+			checkDetailClientBill(clientBill);
 			clientBillRepository.deleteById(id);
-			return true;
+			body = "Factura eliminada!";
 		}
-		return false;
+		return ResponseEntity.accepted().headers(headers).body(body);
+	}
+
+	private void checkDetailClientBill(ClientBill clientBill) {
+		List<DetailClientBill> details = detailClientBillController.findAll();
+		for(DetailClientBill detail: details) {
+			detailClientBillController.deleteBillProduct(detail);
+		}
 	}
 }

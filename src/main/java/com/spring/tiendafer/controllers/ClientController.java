@@ -7,7 +7,9 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -88,14 +90,16 @@ public class ClientController {
 	/**
 	 * @param id => Client id that you want to delete, it comes from URL
 	 */
-	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public boolean delete(@PathVariable BigInteger id) {
+	public ResponseEntity<String> delete(@PathVariable BigInteger id) {
+		var headers = new HttpHeaders();
+		headers.add("Responded", "ProductController");
+		String body = "Cliente no encontrado!";
 		Client client = clientRepository.findById(id).orElse(null);
 		if(client != null) {
 			clientRepository.deleteById(id);
-			return true;
+			body = "Cliente eliminado!";
 		}
-		return false;
+		return ResponseEntity.accepted().headers(headers).body(body);
 	}
 }

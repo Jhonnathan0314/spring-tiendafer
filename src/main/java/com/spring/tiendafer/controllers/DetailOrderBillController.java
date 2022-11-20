@@ -6,7 +6,9 @@ package com.spring.tiendafer.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -105,16 +107,18 @@ public class DetailOrderBillController {
 	/**
 	 * @param id => detailOrderBill id that you want to delete, it comes from URL
 	 */
-	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public boolean delete(@PathVariable int id) {
+	public ResponseEntity<String> delete(@PathVariable int id) {
+		var headers = new HttpHeaders();
+		headers.add("Responded", "ProductController");
+		String body = "Detalle de pedido no encontrado!";
 		DetailOrderBill detailOrderBill = detailOrderBillRepository.findById(id).orElse(null);
 		if(detailOrderBill != null) {
 			deleteOrderProduct(detailOrderBill);
 			detailOrderBillRepository.deleteById(id);
-			return true;
+			body = "Detalle de pedido eliminado!";
 		}
-		return false;
+		return ResponseEntity.accepted().headers(headers).body(body);
 	}
 	
 	/**
@@ -157,7 +161,7 @@ public class DetailOrderBillController {
 	/**
 	 * @param detailOrderBill => DetailOrderBill object to be deleted
 	 */
-	private void deleteOrderProduct(DetailOrderBill detailOrderBill) {
+	public void deleteOrderProduct(DetailOrderBill detailOrderBill) {
 		Product product = productRepository.findById(detailOrderBill.getProduct().getIdProduct()).orElse(null);
 		product.setQuantityAvailable(product.getQuantityAvailable() - detailOrderBill.getReceivedQuantity());
 		productRepository.save(product);

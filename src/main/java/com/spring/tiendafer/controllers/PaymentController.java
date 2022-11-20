@@ -77,7 +77,8 @@ public class PaymentController {
 			payment.setClient(client);
 			payment = paymentRepository.save(payment);
 			List<ClientBill> clientBills = clientBillRepository.findByClient(idClient);
-			refreshBills(clientBills, payment);
+			int change = refreshBills(clientBills, payment);
+			payment.setChangeMoney(change);
 			return payment;
 		}
 		return null;
@@ -86,20 +87,22 @@ public class PaymentController {
 	/**
 	 * @param clientBills
 	 * @param payment
+	 * @return change
 	 */
-	private void refreshBills(List<ClientBill> clientBills, Payment payment) {
+	private int refreshBills(List<ClientBill> clientBills, Payment payment) {
 		int cash = payment.getCash();
 		for(ClientBill clientBill: clientBills) {
 			if(cash > 0) {
 				if(clientBill.getTotalValue() <= cash) {
+					clientBill.setPendingValue(0);
 					cash -= clientBill.getTotalValue();
-					clientBill.setTotalValue(0);					
 				}else {
-					clientBill.setTotalValue(clientBill.getTotalValue() - cash);
+					clientBill.setPendingValue(clientBill.getTotalValue() - cash);
 					cash = 0;
 				}
 				clientBillRepository.save(clientBill);
 			}
 		}
+		return cash;
 	}
 }

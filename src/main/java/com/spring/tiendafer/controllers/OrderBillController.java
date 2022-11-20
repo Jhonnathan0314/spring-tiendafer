@@ -7,7 +7,9 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.spring.tiendafer.models.DetailOrderBill;
 import com.spring.tiendafer.models.OrderBill;
 import com.spring.tiendafer.models.Supplier;
 import com.spring.tiendafer.repositories.OrderBillRepository;
@@ -36,6 +39,8 @@ public class OrderBillController {
 	private OrderBillRepository orderBillRepository;
 	@Autowired
 	private SupplierRepository supplierRepository;
+	@Autowired
+	private DetailOrderBillController detailOrderBillController;
 
 	//Metodos propios
 	/**
@@ -78,14 +83,24 @@ public class OrderBillController {
 	/**
 	 * @param id => ClientBill id that you want to delete, it comes from URL
 	 */
-	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public boolean delete(@PathVariable int id) {
+	public ResponseEntity<String> delete(@PathVariable int id) {
+		var headers = new HttpHeaders();
+		headers.add("Responded", "ProductController");
+		String body = "Pedido no encontrado!";
 		OrderBill orderBill = orderBillRepository.findById(id).orElse(null);
 		if(orderBill != null) {
+			checkDetailOrderBill(orderBill);
 			orderBillRepository.deleteById(id);
-			return true;
+			body = "Pedido eliminado!";
 		}
-		return false;
+		return ResponseEntity.accepted().headers(headers).body(body);
+	}
+	
+	private void checkDetailOrderBill(OrderBill orderBill) {
+		List<DetailOrderBill> details = detailOrderBillController.findAll();
+		for(DetailOrderBill detail: details) {
+			detailOrderBillController.deleteOrderProduct(detail);
+		}
 	}
 }

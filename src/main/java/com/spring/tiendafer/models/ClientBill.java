@@ -23,15 +23,17 @@ public class ClientBill {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int idClientBill;
 	private float totalValue;
+	private float pendingValue;
 	private String date;
 	@OneToOne
 	@JoinColumn(name = "id_client")
 	private Client client;
 	
 	//Metodo constructor
-	public ClientBill(float totalValue, String date, Client client) {
+	public ClientBill(float totalValue, float pendingValue, String date, Client client) {
 		super();
 		this.totalValue = totalValue;
+		this.pendingValue = pendingValue;
 		this.date = date;
 		this.client = client;
 	}
@@ -55,6 +57,14 @@ public class ClientBill {
 
 	public void setTotalValue(float totalValue) {
 		this.totalValue = totalValue;
+	}
+
+	public float getPendingValue() {
+		return pendingValue;
+	}
+
+	public void setPendingValue(float pendingValue) {
+		this.pendingValue = pendingValue;
 	}
 
 	public String getDate() {

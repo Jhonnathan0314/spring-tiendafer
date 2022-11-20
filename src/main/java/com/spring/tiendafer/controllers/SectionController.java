@@ -6,7 +6,9 @@ package com.spring.tiendafer.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,14 +88,16 @@ public class SectionController {
 	/**
 	 * @param id => Section id that you want to delete, it comes from URL
 	 */
-	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	@DeleteMapping("{id}")
-	public boolean delete(@PathVariable int id) {
+	public ResponseEntity<String> delete(@PathVariable int id) {
+		var headers = new HttpHeaders();
+		headers.add("Responded", "ProductController");
+		String body = "Seccion no encontrada!";
 		Section section = sectionRepository.findById(id).orElse(null);
 		if(section != null) {
 			sectionRepository.deleteById(id);
-			return true;
+			body = "Seccion eliminada!";
 		}
-		return false;
+		return ResponseEntity.accepted().headers(headers).body(body);
 	}
 }
