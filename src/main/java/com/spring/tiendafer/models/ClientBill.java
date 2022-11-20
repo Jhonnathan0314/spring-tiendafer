@@ -25,16 +25,18 @@ public class ClientBill {
 	private float totalValue;
 	private float pendingValue;
 	private String date;
+	private boolean isPending;
 	@OneToOne
 	@JoinColumn(name = "id_client")
 	private Client client;
 	
 	//Metodo constructor
-	public ClientBill(float totalValue, float pendingValue, String date, Client client) {
+	public ClientBill(float totalValue, float pendingValue, String date, boolean isPending, Client client) {
 		super();
 		this.totalValue = totalValue;
 		this.pendingValue = pendingValue;
 		this.date = date;
+		this.isPending = isPending;
 		this.client = client;
 	}
 
@@ -73,6 +75,14 @@ public class ClientBill {
 
 	public void setDate(String date) {
 		this.date = date;
+	}
+
+	public boolean isPending() {
+		return isPending;
+	}
+
+	public void setPending(boolean isPending) {
+		this.isPending = isPending;
 	}
 
 	public Client getClient() {

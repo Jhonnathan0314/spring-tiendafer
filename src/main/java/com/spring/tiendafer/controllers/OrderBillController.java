@@ -65,6 +65,15 @@ public class OrderBillController {
 	}
 
 	/**
+	 * @param id => ClientBill id that you want to find, it comes from URL
+	 * @return ClientBill with id received
+	 */
+	@GetMapping("supplier/{idSupplier}")
+	public List<OrderBill> findBySupplier(@PathVariable BigInteger idSupplier) {
+		return orderBillRepository.findBySupplier(idSupplier);
+	}
+	
+	/**
 	 * @param orderBill => OrderBill Object that contains total value and date
 	 * @param id_supplier => Supplier id that you want to include in OrderBill, it comes from URL
 	 * @return OrderBill created

@@ -78,8 +78,8 @@ public class DetailOrderBillController {
 		Product product = productRepository.findById(idProduct).orElse(null);
 		OrderBill orderBill = orderBillRepository.findById(idOrderBill).orElse(null);
 		if(detailOrderBill != null && product != null && orderBill != null) {
-			detailOrderBill.setProduct(product);
-			detailOrderBill.setOrderBill(orderBill);
+			detailOrderBill.setUnitValue(product.getSaleValue());
+			detailOrderBill.setTotalValue(detailOrderBill.getUnitValue() * detailOrderBill.getReceivedQuantity());
 			return createDetailOrderBill(detailOrderBill, product, orderBill);
 		}
 		return null;
@@ -130,8 +130,10 @@ public class DetailOrderBillController {
 	private DetailOrderBill createDetailOrderBill(DetailOrderBill detailOrderBill, Product product, OrderBill orderBill) {
 		product.setQuantityAvailable(product.getQuantityAvailable() + detailOrderBill.getReceivedQuantity());
 		Product answerProduct = productRepository.save(product);
+		
 		orderBill.setTotalValue(orderBill.getTotalValue() + detailOrderBill.getTotalValue());
 		OrderBill orderBillAnswer = orderBillRepository.save(orderBill);
+		
 		detailOrderBill.setProduct(answerProduct);
 		detailOrderBill.setOrderBill(orderBillAnswer);
 		return detailOrderBillRepository.save(detailOrderBill);
@@ -145,16 +147,24 @@ public class DetailOrderBillController {
 	 * @return DetailClientBill updated
 	 */
 	private DetailOrderBill updateDetailOrdertBill(DetailOrderBill detailOrderBill, DetailOrderBill newDetailOrderBill, Product product, OrderBill orderBill) {
-		product.setQuantityAvailable(product.getQuantityAvailable() - detailOrderBill.getReceivedQuantity() + newDetailOrderBill.getReceivedQuantity());
-		Product answerProduct = productRepository.save(product);
-		orderBill.setTotalValue(orderBill.getTotalValue() + newDetailOrderBill.getTotalValue() - detailOrderBill.getTotalValue());
-		OrderBill orderBillAnswer = orderBillRepository.save(orderBill);
-		detailOrderBill.setProduct(answerProduct);
-		detailOrderBill.setOrderBill(orderBillAnswer);
+		product.setQuantityAvailable(product.getQuantityAvailable() + newDetailOrderBill.getReceivedQuantity());
+		productRepository.save(product);
+		
+		Product oldProduct = detailOrderBill.getProduct();
+		oldProduct.setQuantityAvailable(oldProduct.getQuantityAvailable() - detailOrderBill.getReceivedQuantity());
+		
+		orderBill.setTotalValue(orderBill.getTotalValue() - detailOrderBill.getTotalValue());
+		
+		detailOrderBill.setProduct(product);
 		detailOrderBill.setOrderedQuantity(newDetailOrderBill.getOrderedQuantity());
 		detailOrderBill.setReceivedQuantity(newDetailOrderBill.getReceivedQuantity());
-		detailOrderBill.setUnitValue(newDetailOrderBill.getUnitValue());
-		detailOrderBill.setTotalValue(newDetailOrderBill.getTotalValue());
+		detailOrderBill.setUnitValue(product.getSaleValue());
+		detailOrderBill.setTotalValue(detailOrderBill.getUnitValue() * detailOrderBill.getReceivedQuantity());
+		
+		orderBill.setTotalValue(orderBill.getTotalValue() + detailOrderBill.getTotalValue());
+		orderBillRepository.save(orderBill);
+		
+		detailOrderBill.setOrderBill(orderBill);
 		return detailOrderBillRepository.save(detailOrderBill);
 	}
 	
@@ -165,6 +175,7 @@ public class DetailOrderBillController {
 		Product product = productRepository.findById(detailOrderBill.getProduct().getIdProduct()).orElse(null);
 		product.setQuantityAvailable(product.getQuantityAvailable() - detailOrderBill.getReceivedQuantity());
 		productRepository.save(product);
+		
 		OrderBill orderBill = orderBillRepository.findById(detailOrderBill.getOrderBill().getIdOrderBill()).orElse(null);
 		orderBill.setTotalValue(orderBill.getTotalValue() - detailOrderBill.getTotalValue());
 		orderBillRepository.save(orderBill);
