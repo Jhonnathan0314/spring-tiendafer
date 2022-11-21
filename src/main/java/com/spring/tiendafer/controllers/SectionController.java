@@ -28,7 +28,7 @@ import com.spring.tiendafer.repositories.SectionRepository;
  *
  */
 @RestController
-@RequestMapping(value = "/section")
+@RequestMapping(value = "/api")
 @CrossOrigin("*")
 public class SectionController {
 	//Declaracion de variables
@@ -39,7 +39,7 @@ public class SectionController {
 	/**
 	 * @return All Sections existing in DB
 	 */
-	@GetMapping("")
+	@GetMapping("sections")
 	public List<Section> findAll(){
 		return sectionRepository.findAll();
 	}
@@ -48,7 +48,7 @@ public class SectionController {
 	 * @param id => Section id that you want to find, it comes from URL
 	 * @return Section with id received
 	 */
-	@GetMapping("{id}")
+	@GetMapping("section/{id}")
 	public Section findById(@PathVariable int id) {
 		Section section = sectionRepository.findById(id).orElse(null);
 		if(section != null) {
@@ -62,7 +62,7 @@ public class SectionController {
 	 * @return Section created
 	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("")
+	@PostMapping("section")
 	public Section create(@RequestBody Section section) {
 		if(section != null) {
 			return sectionRepository.save(section);
@@ -75,7 +75,7 @@ public class SectionController {
 	 * @param newSection => Section Object that contains the new section name
 	 * @return Section created
 	 */
-	@PutMapping("{id}")
+	@PutMapping("section/{id}")
 	public Section update(@PathVariable int id, @RequestBody Section newSection) {
 		Section section = sectionRepository.findById(id).orElse(null);
 		if(section != null && newSection != null) {
@@ -88,7 +88,7 @@ public class SectionController {
 	/**
 	 * @param id => Section id that you want to delete, it comes from URL
 	 */
-	@DeleteMapping("{id}")
+	@DeleteMapping("section/{id}")
 	public ResponseEntity<String> delete(@PathVariable int id) {
 		var headers = new HttpHeaders();
 		headers.add("Responded", "ProductController");

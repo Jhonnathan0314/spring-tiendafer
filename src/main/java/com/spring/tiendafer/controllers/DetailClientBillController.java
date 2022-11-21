@@ -32,7 +32,7 @@ import com.spring.tiendafer.repositories.ProductRepository;
  *
  */
 @RestController
-@RequestMapping(value = "/detailclientbill")
+@RequestMapping(value = "/api")
 @CrossOrigin("*")
 public class DetailClientBillController {
 	//Declaracion de variables
@@ -47,7 +47,7 @@ public class DetailClientBillController {
 	/**
 	 * @return allDetailClientBill existing in DB
 	 */
-	@GetMapping("")
+	@GetMapping("detailclientbills")
 	public List<DetailClientBill> findAll(){
 		return detailClientBillRepository.findAll();
 	}
@@ -56,7 +56,7 @@ public class DetailClientBillController {
 	 * @param id => detailClientBill id that you want to find, it comes from URL
 	 * @return DetailClientBill with id received
 	 */
-	@GetMapping("{id}")
+	@GetMapping("detailclientbill/{id}")
 	public DetailClientBill findById(@PathVariable int id) {
 		DetailClientBill detailClientBill = detailClientBillRepository.findById(id).orElse(null);
 		if(detailClientBill != null) {
@@ -72,7 +72,7 @@ public class DetailClientBillController {
 	 * @return DetailClientBill created
 	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/product/{idProduct}/clientbill/{idClientBill}")
+	@PostMapping("detailclientbill/product/{idProduct}/clientbill/{idClientBill}")
 	public DetailClientBill create(@RequestBody DetailClientBill detailClientBill, 
 			@PathVariable int idProduct, @PathVariable int idClientBill) {
 		Product product = productRepository.findById(idProduct).orElse(null);
@@ -92,7 +92,7 @@ public class DetailClientBillController {
 	 * @param idClientBill => ClientBill id that you want to update in detailClientBill, it comes from URL
 	 * @return DetailClientBill updated
 	 */
-	@PutMapping("/{id}/product/{idProduct}/clientbill/{idClientBill}")
+	@PutMapping("detailclientbill/{id}/product/{idProduct}/clientbill/{idClientBill}")
 	public DetailClientBill update(@PathVariable int id, @RequestBody DetailClientBill newDetailClientBill,
 			@PathVariable int idProduct, @PathVariable int idClientBill) {
 		DetailClientBill detailClientBill = detailClientBillRepository.findById(id).orElse(null);
@@ -107,7 +107,7 @@ public class DetailClientBillController {
 	/**
 	 * @param id => detailClientBill id that you want to delete, it comes from URL
 	 */
-	@DeleteMapping("{id}")
+	@DeleteMapping("detailclientbill/{id}")
 	public ResponseEntity<String> delete(@PathVariable int id) {
 		var headers = new HttpHeaders();
 		headers.add("Responded", "ProductController");

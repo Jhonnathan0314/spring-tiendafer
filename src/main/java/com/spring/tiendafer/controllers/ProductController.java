@@ -30,7 +30,7 @@ import com.spring.tiendafer.repositories.SectionRepository;
  *
  */
 @RestController
-@RequestMapping(value = "/product")
+@RequestMapping(value = "/api")
 @CrossOrigin("*")
 public class ProductController {
 	//Declaracion de variables
@@ -43,7 +43,7 @@ public class ProductController {
 	/**
 	 * @return All Products existing in DB
 	 */
-	@GetMapping("")
+	@GetMapping("products")
 	public List<Product> findAll(){
 		return productRepository.findAll();
 	}
@@ -52,7 +52,7 @@ public class ProductController {
 	 * @param id => Product id that you want to find, it comes from URL
 	 * @return Product with id received
 	 */
-	@GetMapping("{id}")
+	@GetMapping("product/{id}")
 	public Product findById(@PathVariable int id) {
 		Product product = productRepository.findById(id).orElse(null);
 		if(product != null) {
@@ -67,7 +67,7 @@ public class ProductController {
 	 * @return Product created
 	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/section/{idSection}")
+	@PostMapping("product/section/{idSection}")
 	public Product create(@RequestBody Product product, @PathVariable int idSection) {
 		Section section = sectionRepository.findById(idSection).orElse(null);
 		if(product != null && section != null) {
@@ -83,7 +83,7 @@ public class ProductController {
 	 * @param idSection => Section id that you want to update in Product, it comes from URL
 	 * @return Product updated
 	 */
-	@PutMapping("/{id}/section/{idSection}")
+	@PutMapping("product/{id}/section/{idSection}")
 	public Product update(@PathVariable int id, @RequestBody Product newProduct, @PathVariable int idSection) {
 		Product product = productRepository.findById(id).orElse(null);
 		Section section = sectionRepository.findById(idSection).orElse(null);
@@ -100,7 +100,7 @@ public class ProductController {
 	/**
 	 * @param id => Product id that you want to delete, it comes from URL
 	 */
-	@DeleteMapping("{id}")
+	@DeleteMapping("product/{id}")
 	public ResponseEntity<String> delete(@PathVariable int id) {
 		var headers = new HttpHeaders();
 		headers.add("Responded", "ProductController");

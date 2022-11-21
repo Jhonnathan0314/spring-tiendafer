@@ -31,7 +31,7 @@ import com.spring.tiendafer.repositories.ClientRepository;
  *
  */
 @RestController
-@RequestMapping(value = "/clientbill")
+@RequestMapping(value = "/api")
 @CrossOrigin("*")
 public class ClientBillController {
 	//Declaracion de variables
@@ -46,7 +46,7 @@ public class ClientBillController {
 	/**
 	 * @return allClientBill existing in DB
 	 */
-	@GetMapping("")
+	@GetMapping("clientbills")
 	public List<ClientBill> findAll(){
 		return clientBillRepository.findAll();
 	}
@@ -55,7 +55,7 @@ public class ClientBillController {
 	 * @param id => ClientBill id that you want to find, it comes from URL
 	 * @return ClientBill with id received
 	 */
-	@GetMapping("{id}")
+	@GetMapping("clientbill/{id}")
 	public ClientBill findById(@PathVariable int id) {
 		ClientBill clientBill = clientBillRepository.findById(id).orElse(null);
 		if(clientBill != null) {
@@ -68,7 +68,7 @@ public class ClientBillController {
 	 * @param id => ClientBill id that you want to find, it comes from URL
 	 * @return ClientBill with id received
 	 */
-	@GetMapping("client/{idClient}")
+	@GetMapping("clientbills/client/{idClient}")
 	public List<ClientBill> findByClient(@PathVariable BigInteger idClient) {
 		return clientBillRepository.findByClient(idClient);
 	}
@@ -79,7 +79,7 @@ public class ClientBillController {
 	 * @return ClientBill created
 	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/client/{idClient}")
+	@PostMapping("clientbill/client/{idClient}")
 	public ClientBill create(@RequestBody ClientBill clientBill, @PathVariable BigInteger idClient) {
 		Client client = clientRepository.findById(idClient).orElse(null);
 		if(clientBill != null && client != null) {
@@ -92,7 +92,7 @@ public class ClientBillController {
 	/**
 	 * @param id => ClientBill id that you want to delete, it comes from URL
 	 */
-	@DeleteMapping("{id}")
+	@DeleteMapping("clientbill/{id}")
 	public ResponseEntity<String> delete(@PathVariable int id) {
 		var headers = new HttpHeaders();
 		headers.add("Responded", "ProductController");

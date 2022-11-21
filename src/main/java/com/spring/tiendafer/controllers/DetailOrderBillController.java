@@ -32,7 +32,7 @@ import com.spring.tiendafer.repositories.ProductRepository;
  *
  */
 @RestController
-@RequestMapping(value = "/detailorderbill")
+@RequestMapping(value = "/api")
 @CrossOrigin("*")
 public class DetailOrderBillController {
 	//Declaracion de variables
@@ -47,7 +47,7 @@ public class DetailOrderBillController {
 	/**
 	 * @return allDetailOrderBill existing in DB
 	 */
-	@GetMapping("")
+	@GetMapping("detailorderbills")
 	public List<DetailOrderBill> findAll(){
 		return detailOrderBillRepository.findAll();
 	}
@@ -56,7 +56,7 @@ public class DetailOrderBillController {
 	 * @param id => detailOrderBill id that you want to find, it comes from URL
 	 * @return DetailOrderBill with id received
 	 */
-	@GetMapping("{id}")
+	@GetMapping("detailorderbill/{id}")
 	public DetailOrderBill findById(@PathVariable int id) {
 		DetailOrderBill detailOrderBill = detailOrderBillRepository.findById(id).orElse(null);
 		if(detailOrderBill != null) {
@@ -72,7 +72,7 @@ public class DetailOrderBillController {
 	 * @return DetailOrderBill created
 	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/product/{idProduct}/orderbill/{idOrderBill}")
+	@PostMapping("detailorderbill/product/{idProduct}/orderbill/{idOrderBill}")
 	public DetailOrderBill create(@RequestBody DetailOrderBill detailOrderBill, 
 			@PathVariable int idProduct, @PathVariable int idOrderBill) {
 		Product product = productRepository.findById(idProduct).orElse(null);
@@ -92,7 +92,7 @@ public class DetailOrderBillController {
 	 * @param idOrderBill => OrderBill id that you want to update in detailOrderBill, it comes from URL
 	 * @return DetailOrderBill updated
 	 */
-	@PutMapping("/{id}/product/{idProduct}/orderbill/{idOrderBill}")
+	@PutMapping("detailorderbill/{id}/product/{idProduct}/orderbill/{idOrderBill}")
 	public DetailOrderBill update(@PathVariable int id, @RequestBody DetailOrderBill newDetailOrderBill,
 			@PathVariable int idProduct, @PathVariable int idOrderBill) {
 		DetailOrderBill detailOrderBill = detailOrderBillRepository.findById(id).orElse(null);
@@ -107,7 +107,7 @@ public class DetailOrderBillController {
 	/**
 	 * @param id => detailOrderBill id that you want to delete, it comes from URL
 	 */
-	@DeleteMapping("{id}")
+	@DeleteMapping("detailorderbill/{id}")
 	public ResponseEntity<String> delete(@PathVariable int id) {
 		var headers = new HttpHeaders();
 		headers.add("Responded", "ProductController");

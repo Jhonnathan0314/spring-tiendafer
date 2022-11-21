@@ -29,7 +29,7 @@ import com.spring.tiendafer.repositories.ClientRepository;
  *
  */
 @RestController
-@RequestMapping(value = "/client")
+@RequestMapping(value = "/api")
 @CrossOrigin("*")
 public class ClientController {
 	//Declaracion de variables
@@ -40,7 +40,7 @@ public class ClientController {
 	/**
 	 * @return All Clients existing in DB
 	 */
-	@GetMapping("")
+	@GetMapping("clients")
 	public List<Client> findAll(){
 		return clientRepository.findAll();
 	}
@@ -49,7 +49,7 @@ public class ClientController {
 	 * @param id => Client id that you want to find, it comes from URL
 	 * @return Client with id received
 	 */
-	@GetMapping("{id}")
+	@GetMapping("client/{id}")
 	public Client findById(@PathVariable BigInteger id) {
 		Client client = clientRepository.findById(id).orElse(null);
 		if(client != null) {
@@ -63,7 +63,7 @@ public class ClientController {
 	 * @return Client created
 	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("")
+	@PostMapping("client")
 	public Client create(@RequestBody Client client) {
 		if(client != null) {
 			return clientRepository.save(client);
@@ -77,7 +77,7 @@ public class ClientController {
 	 * @param newClient => Client Object that contains the new client name
 	 * @return Client updated
 	 */
-	@PutMapping("{id}")
+	@PutMapping("client/{id}")
 	public Client update(@PathVariable BigInteger id, @RequestBody Client newClient) {
 		Client client = clientRepository.findById(id).orElse(null);
 		if(client != null && newClient != null) {
@@ -90,7 +90,7 @@ public class ClientController {
 	/**
 	 * @param id => Client id that you want to delete, it comes from URL
 	 */
-	@DeleteMapping("{id}")
+	@DeleteMapping("client/{id}")
 	public ResponseEntity<String> delete(@PathVariable BigInteger id) {
 		var headers = new HttpHeaders();
 		headers.add("Responded", "ProductController");

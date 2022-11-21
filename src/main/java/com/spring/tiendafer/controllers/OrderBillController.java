@@ -31,7 +31,7 @@ import com.spring.tiendafer.repositories.SupplierRepository;
  *
  */
 @RestController
-@RequestMapping("orderbill")
+@RequestMapping("/api")
 @CrossOrigin("*")
 public class OrderBillController {
 	//Declaracion de variables
@@ -46,7 +46,7 @@ public class OrderBillController {
 	/**
 	 * @return allClientBill existing in DB
 	 */
-	@GetMapping("")
+	@GetMapping("orderbills")
 	public List<OrderBill> findAll(){
 		return orderBillRepository.findAll();
 	}
@@ -55,7 +55,7 @@ public class OrderBillController {
 	 * @param id => ClientBill id that you want to find, it comes from URL
 	 * @return ClientBill with id received
 	 */
-	@GetMapping("{id}")
+	@GetMapping("orderbill/{id}")
 	public OrderBill findById(@PathVariable int id) {
 		OrderBill orderBill = orderBillRepository.findById(id).orElse(null);
 		if(orderBill != null) {
@@ -68,7 +68,7 @@ public class OrderBillController {
 	 * @param id => ClientBill id that you want to find, it comes from URL
 	 * @return ClientBill with id received
 	 */
-	@GetMapping("supplier/{idSupplier}")
+	@GetMapping("orderbills/supplier/{idSupplier}")
 	public List<OrderBill> findBySupplier(@PathVariable BigInteger idSupplier) {
 		return orderBillRepository.findBySupplier(idSupplier);
 	}
@@ -79,7 +79,7 @@ public class OrderBillController {
 	 * @return OrderBill created
 	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/supplier/{id_supplier}")
+	@PostMapping("orderbill/supplier/{id_supplier}")
 	public OrderBill create(@RequestBody OrderBill orderBill, @PathVariable BigInteger id_supplier) {
 		Supplier supplier = supplierRepository.findById(id_supplier).orElse(null);
 		if(orderBill != null && supplier != null) {
@@ -92,7 +92,7 @@ public class OrderBillController {
 	/**
 	 * @param id => ClientBill id that you want to delete, it comes from URL
 	 */
-	@DeleteMapping("{id}")
+	@DeleteMapping("orderbill/{id}")
 	public ResponseEntity<String> delete(@PathVariable int id) {
 		var headers = new HttpHeaders();
 		headers.add("Responded", "ProductController");

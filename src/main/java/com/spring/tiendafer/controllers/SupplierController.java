@@ -29,7 +29,7 @@ import com.spring.tiendafer.repositories.SupplierRepository;
  *
  */
 @RestController
-@RequestMapping(value = "/supplier")
+@RequestMapping(value = "/api")
 @CrossOrigin("*")
 public class SupplierController {
 	//Declaracion de variables
@@ -40,7 +40,7 @@ public class SupplierController {
 	/**
 	 * @return All Suppliers existing in DB
 	 */
-	@GetMapping("")
+	@GetMapping("suppliers")
 	public List<Supplier> findAll(){
 		return supplierRepository.findAll();
 	}
@@ -49,7 +49,7 @@ public class SupplierController {
 	 * @param id => Supplier id that you want to find, it comes from URL
 	 * @return Supplier with id received
 	 */
-	@GetMapping("{id}")
+	@GetMapping("supplier/{id}")
 	public Supplier findById(@PathVariable BigInteger id) {
 		Supplier supplier = supplierRepository.findById(id).orElse(null);
 		if(supplier != null) {
@@ -63,7 +63,7 @@ public class SupplierController {
 	 * @return Supplier created
 	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("")
+	@PostMapping("supplier")
 	public Supplier create(@RequestBody Supplier supplier) {
 		if(supplier != null) {
 			return supplierRepository.save(supplier);
@@ -76,7 +76,7 @@ public class SupplierController {
 	 * @param newSupplier => Supplier Object that contains the new supplier name
 	 * @return Supplier updated
 	 */
-	@PutMapping("{id}")
+	@PutMapping("supplier/{id}")
 	public Supplier update(@PathVariable BigInteger id, @RequestBody Supplier newSupplier) {
 		Supplier supplier = supplierRepository.findById(id).orElse(null);
 		if(supplier != null && newSupplier != null) {
@@ -90,7 +90,7 @@ public class SupplierController {
 	/**
 	 * @param id => Supplier id that you want to delete, it comes from URL
 	 */
-	@DeleteMapping("{id}")
+	@DeleteMapping("supplier/{id}")
 	public ResponseEntity<String> delete(@PathVariable BigInteger id) {
 		var headers = new HttpHeaders();
 		headers.add("Responded", "ProductController");

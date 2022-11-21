@@ -29,7 +29,7 @@ import com.spring.tiendafer.repositories.PaymentRepository;
  *
  */
 @RestController
-@RequestMapping(value = "/payment")
+@RequestMapping(value = "/api")
 @CrossOrigin("*")
 public class PaymentController {
 	//Declaracion de variables
@@ -44,7 +44,7 @@ public class PaymentController {
 	/**
 	 * @return all Payments existing in DB
 	 */
-	@GetMapping("")
+	@GetMapping("payments")
 	public List<Payment> findAll(){
 		return paymentRepository.findAll();
 	}
@@ -54,7 +54,7 @@ public class PaymentController {
 	 * @param id => Payment id that you want to find, it comes from URL
 	 * @return
 	 */
-	@GetMapping("{id}")
+	@GetMapping("payment/{id}")
 	public Payment findById(@PathVariable int id) {
 		Payment payment = paymentRepository.findById(id).orElse(null);
 		if(payment != null) {
@@ -70,7 +70,7 @@ public class PaymentController {
 	 * @return Payment created
 	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("/client/{idClient}")
+	@PostMapping("payment/client/{idClient}")
 	public Payment create(@RequestBody Payment payment, @PathVariable BigInteger idClient) {
 		Client client = clientRepository.findById(idClient).orElse(null);
 		if(payment != null && client != null) {
