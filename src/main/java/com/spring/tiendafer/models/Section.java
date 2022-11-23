@@ -21,7 +21,7 @@ public class Section {
 	//Declaracion de variables
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer idSection;
+	private int idSection;
 	private String name;
 
 	//Metodo constructor

@@ -78,11 +78,15 @@ public class PaymentController {
 			List<ClientBill> clientBills = clientBillRepository.findByClient(idClient);
 			int change = refreshBills(clientBills, payment);
 			payment.setChangeMoney(change);
+			client.setNumberBills(0);
+			client.setTotalPending(0);
+			client = refresClientData(client);
+			clientRepository.save(client);
 			return paymentRepository.save(payment);
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @param clientBills
 	 * @param payment
@@ -106,5 +110,16 @@ public class PaymentController {
 			}
 		}
 		return cash;
+	}
+
+	private Client refresClientData(Client client) {
+		List<ClientBill> clientBills = clientBillRepository.findByClient(client.getIdClient());
+		for(ClientBill bill: clientBills) {
+			if(bill.getPendingValue() > 0) {
+				client.setNumberBills(client.getNumberBills() + 1);
+				client.setTotalPending(client.getTotalPending() + bill.getPendingValue());
+			}
+		}
+		return client;
 	}
 }

@@ -78,8 +78,8 @@ public class DetailOrderBillController {
 		Product product = productRepository.findById(idProduct).orElse(null);
 		OrderBill orderBill = orderBillRepository.findById(idOrderBill).orElse(null);
 		if(detailOrderBill != null && product != null && orderBill != null) {
-			detailOrderBill.setUnitValue(product.getSaleValue());
 			detailOrderBill.setTotalValue(detailOrderBill.getUnitValue() * detailOrderBill.getReceivedQuantity());
+			detailOrderBill.setPercentageProfit(0);
 			return createDetailOrderBill(detailOrderBill, product, orderBill);
 		}
 		return null;
@@ -147,23 +147,22 @@ public class DetailOrderBillController {
 	 * @return DetailClientBill updated
 	 */
 	private DetailOrderBill updateDetailOrdertBill(DetailOrderBill detailOrderBill, DetailOrderBill newDetailOrderBill, Product product, OrderBill orderBill) {
-		product.setQuantityAvailable(product.getQuantityAvailable() + newDetailOrderBill.getReceivedQuantity());
-		productRepository.save(product);
-		
-		Product oldProduct = detailOrderBill.getProduct();
-		oldProduct.setQuantityAvailable(oldProduct.getQuantityAvailable() - detailOrderBill.getReceivedQuantity());
+		Product productAdded = productRepository.findById(newDetailOrderBill.getProduct().getIdProduct()).orElse(null);
+		productAdded.setQuantityAvailable(product.getQuantityAvailable() - detailOrderBill.getReceivedQuantity() + newDetailOrderBill.getReceivedQuantity());
 		
 		orderBill.setTotalValue(orderBill.getTotalValue() - detailOrderBill.getTotalValue());
 		
-		detailOrderBill.setProduct(product);
 		detailOrderBill.setOrderedQuantity(newDetailOrderBill.getOrderedQuantity());
 		detailOrderBill.setReceivedQuantity(newDetailOrderBill.getReceivedQuantity());
-		detailOrderBill.setUnitValue(product.getSaleValue());
+		detailOrderBill.setUnitValue(newDetailOrderBill.getUnitValue());
+		detailOrderBill.setPercentageProfit(((productAdded.getSaleValue()-detailOrderBill.getUnitValue())/detailOrderBill.getUnitValue())*100);
 		detailOrderBill.setTotalValue(detailOrderBill.getUnitValue() * detailOrderBill.getReceivedQuantity());
 		
 		orderBill.setTotalValue(orderBill.getTotalValue() + detailOrderBill.getTotalValue());
 		orderBillRepository.save(orderBill);
+		productRepository.save(productAdded);
 		
+		detailOrderBill.setProduct(productAdded);
 		detailOrderBill.setOrderBill(orderBill);
 		return detailOrderBillRepository.save(detailOrderBill);
 	}

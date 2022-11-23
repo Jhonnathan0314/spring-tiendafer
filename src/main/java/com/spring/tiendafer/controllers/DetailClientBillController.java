@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.tiendafer.models.DetailClientBill;
+import com.spring.tiendafer.models.Client;
 import com.spring.tiendafer.models.ClientBill;
 import com.spring.tiendafer.models.Product;
 import com.spring.tiendafer.repositories.ClientBillRepository;
+import com.spring.tiendafer.repositories.ClientRepository;
 import com.spring.tiendafer.repositories.DetailClientBillRepository;
 import com.spring.tiendafer.repositories.ProductRepository;
 
@@ -42,6 +44,8 @@ public class DetailClientBillController {
 	private ProductRepository productRepository;
 	@Autowired
 	private ClientBillRepository clientBillRepository;
+	@Autowired
+	private ClientRepository clientRepository;
 
 	//Metodos propios
 	/**
@@ -136,6 +140,12 @@ public class DetailClientBillController {
 			clientBill.setTotalValue(clientBill.getTotalValue() + detailClientBill.getTotalValue());
 			if(clientBill.isPending()) {
 				clientBill.setPendingValue(clientBill.getPendingValue() + detailClientBill.getTotalValue());
+				
+				Client client = clientRepository.findById(clientBill.getClient().getIdClient()).orElse(null);
+				System.out.println("CREATE 1: " + client.getTotalPending());
+				client.setTotalPending(client.getTotalPending() + detailClientBill.getTotalValue());
+				System.out.println("CREATE 2: " + client.getTotalPending());
+				clientRepository.save(client);
 			}
 			ClientBill clientBillAnswer = clientBillRepository.save(clientBill);
 			
@@ -155,11 +165,8 @@ public class DetailClientBillController {
 	private DetailClientBill updateDetailClientBill(DetailClientBill detailClientBill, DetailClientBill newDetailClientBill, Product product, ClientBill clientBill) {
 		boolean isQuantityAvailable = (product.getQuantityAvailable() - newDetailClientBill.getQuantity() >= 0);
 		if(isQuantityAvailable) {
-			product.setQuantityAvailable(product.getQuantityAvailable() - newDetailClientBill.getQuantity());
+			product.setQuantityAvailable(product.getQuantityAvailable() + detailClientBill.getQuantity() - newDetailClientBill.getQuantity());
 			productRepository.save(product);
-			
-			Product oldProduct = detailClientBill.getProduct();
-			oldProduct.setQuantityAvailable(oldProduct.getQuantityAvailable() + detailClientBill.getQuantity());
 			
 			clientBill.setTotalValue(clientBill.getTotalValue() - detailClientBill.getTotalValue());
 			if(clientBill.isPending()) {

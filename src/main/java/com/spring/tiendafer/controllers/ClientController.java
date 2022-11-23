@@ -82,6 +82,8 @@ public class ClientController {
 		Client client = clientRepository.findById(id).orElse(null);
 		if(client != null && newClient != null) {
 			client.setName(newClient.getName());
+			client.setNumberBills(client.getNumberBills());
+			client.setTotalPending(client.getTotalPending());
 			return clientRepository.save(client);
 		}
 		return null;

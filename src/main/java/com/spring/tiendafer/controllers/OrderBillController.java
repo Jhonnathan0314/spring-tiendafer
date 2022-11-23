@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -22,8 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.tiendafer.models.DetailOrderBill;
 import com.spring.tiendafer.models.OrderBill;
+import com.spring.tiendafer.models.Product;
 import com.spring.tiendafer.models.Supplier;
+import com.spring.tiendafer.repositories.DetailOrderBillRepository;
 import com.spring.tiendafer.repositories.OrderBillRepository;
+import com.spring.tiendafer.repositories.ProductRepository;
 import com.spring.tiendafer.repositories.SupplierRepository;
 
 /**
@@ -40,7 +44,9 @@ public class OrderBillController {
 	@Autowired
 	private SupplierRepository supplierRepository;
 	@Autowired
-	private DetailOrderBillController detailOrderBillController;
+	private DetailOrderBillRepository detailOrderBillRepository;
+	@Autowired
+	private ProductRepository productRepository;
 
 	//Metodos propios
 	/**
@@ -79,12 +85,23 @@ public class OrderBillController {
 	 * @return OrderBill created
 	 */
 	@ResponseStatus(code = HttpStatus.CREATED)
-	@PostMapping("orderbill/supplier/{id_supplier}")
-	public OrderBill create(@RequestBody OrderBill orderBill, @PathVariable BigInteger id_supplier) {
-		Supplier supplier = supplierRepository.findById(id_supplier).orElse(null);
+	@PostMapping("orderbill/supplier/{idSupplier}")
+	public OrderBill create(@RequestBody OrderBill orderBill, @PathVariable BigInteger idSupplier) {
+		Supplier supplier = supplierRepository.findById(idSupplier).orElse(null);
 		if(orderBill != null && supplier != null) {
 			orderBill.setSupplier(supplier);
 			return orderBillRepository.save(orderBill);
+		}
+		return null;
+	}
+	
+	@PutMapping("orderbill/{idOrder}/supplier/{idSupplier}")
+	public OrderBill addSupplier(@PathVariable int idOrder, @PathVariable BigInteger idSupplier) {
+		OrderBill order = orderBillRepository.findById(idOrder).orElse(null);
+		Supplier supplier = supplierRepository.findById(idSupplier).orElse(null);
+		if(order != null && supplier != null) {
+			order.setSupplier(supplier);
+			return orderBillRepository.save(order);
 		}
 		return null;
 	}
@@ -107,9 +124,25 @@ public class OrderBillController {
 	}
 	
 	private void checkDetailOrderBill(OrderBill orderBill) {
-		List<DetailOrderBill> details = detailOrderBillController.findAll();
+		List<DetailOrderBill> details = detailOrderBillRepository.findAll();
 		for(DetailOrderBill detail: details) {
-			detailOrderBillController.deleteOrderProduct(detail);
+			if(detail.getOrderBill().getIdOrderBill() == orderBill.getIdOrderBill()) {
+				deleteOrderProduct(detail);
+				detailOrderBillRepository.deleteById(detail.getIdDetailOrderBill());
+			}
 		}
+	}
+	
+	/**
+	 * @param detailOrderBill => DetailOrderBill object to be deleted
+	 */
+	public void deleteOrderProduct(DetailOrderBill detailOrderBill) {
+		Product product = productRepository.findById(detailOrderBill.getProduct().getIdProduct()).orElse(null);
+		product.setQuantityAvailable(product.getQuantityAvailable() - detailOrderBill.getReceivedQuantity());
+		productRepository.save(product);
+		
+		OrderBill orderBill = orderBillRepository.findById(detailOrderBill.getOrderBill().getIdOrderBill()).orElse(null);
+		orderBill.setTotalValue(orderBill.getTotalValue() - detailOrderBill.getTotalValue());
+		orderBillRepository.save(orderBill);
 	}
 }

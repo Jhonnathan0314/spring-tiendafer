@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -23,8 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.spring.tiendafer.models.Client;
 import com.spring.tiendafer.models.ClientBill;
 import com.spring.tiendafer.models.DetailClientBill;
+import com.spring.tiendafer.models.Product;
 import com.spring.tiendafer.repositories.ClientBillRepository;
 import com.spring.tiendafer.repositories.ClientRepository;
+import com.spring.tiendafer.repositories.DetailClientBillRepository;
+import com.spring.tiendafer.repositories.ProductRepository;
 
 /**
  * @author Jonatan
@@ -40,7 +44,9 @@ public class ClientBillController {
 	@Autowired
 	private ClientRepository clientRepository;
 	@Autowired
-	private DetailClientBillController detailClientBillController;
+	private DetailClientBillRepository detailClientBillRepository;
+	@Autowired
+	private ProductRepository productRepository;
 
 	//Metodos propios
 	/**
@@ -83,6 +89,21 @@ public class ClientBillController {
 	public ClientBill create(@RequestBody ClientBill clientBill, @PathVariable BigInteger idClient) {
 		Client client = clientRepository.findById(idClient).orElse(null);
 		if(clientBill != null && client != null) {
+			if(client.getIdClient() != new BigInteger(0+"")) {
+				client.setNumberBills(client.getNumberBills() + 1);
+			}
+			clientRepository.save(client);
+			clientBill.setClient(client);
+			return clientBillRepository.save(clientBill);
+		}
+		return null;
+	}
+	
+	@PutMapping("clientbill/{idClientBill}/client/{idClient}")
+	public ClientBill addClient(@PathVariable int idClientBill, @PathVariable BigInteger idClient) {
+		ClientBill clientBill = clientBillRepository.findById(idClientBill).orElse(null);
+		Client client = clientRepository.findById(idClient).orElse(null);
+		if(clientBill != null && client != null) {
 			clientBill.setClient(client);
 			return clientBillRepository.save(clientBill);
 		}
@@ -98,8 +119,12 @@ public class ClientBillController {
 		headers.add("Responded", "ProductController");
 		String body = "Factura no encontrada!";
 		ClientBill clientBill = clientBillRepository.findById(id).orElse(null);
+		Client client = clientRepository.findById(clientBill.getClient().getIdClient()).orElse(null);
 		if(clientBill != null) {
 			checkDetailClientBill(clientBill);
+			client.setNumberBills(client.getNumberBills() - 1);
+			client.setTotalPending(client.getTotalPending() - clientBill.getPendingValue());
+			clientRepository.save(client);
 			clientBillRepository.deleteById(id);
 			body = "Factura eliminada!";
 		}
@@ -107,9 +132,25 @@ public class ClientBillController {
 	}
 
 	private void checkDetailClientBill(ClientBill clientBill) {
-		List<DetailClientBill> details = detailClientBillController.findAll();
+		List<DetailClientBill> details = detailClientBillRepository.findAll();
 		for(DetailClientBill detail: details) {
-			detailClientBillController.deleteBillProduct(detail);
+			if(detail.getClientBill().getIdClientBill() == clientBill.getIdClientBill()) {
+				deleteClientBillProduct(detail);
+			}
+			detailClientBillRepository.deleteById(detail.getIdDetailClientBill());
 		}
+	}
+	
+	/**
+	 * @param detailClientBill => DetailClientBill object to be deleted
+	 */
+	public void deleteClientBillProduct(DetailClientBill detailClientBill) {
+		Product product = productRepository.findById(detailClientBill.getProduct().getIdProduct()).orElse(null);
+		product.setQuantityAvailable(product.getQuantityAvailable() + detailClientBill.getQuantity());
+		productRepository.save(product);
+		
+		ClientBill clientBill = clientBillRepository.findById(detailClientBill.getClientBill().getIdClientBill()).orElse(null);
+		clientBill.setTotalValue(clientBill.getTotalValue() - detailClientBill.getTotalValue());
+		clientBillRepository.save(clientBill);
 	}
 }

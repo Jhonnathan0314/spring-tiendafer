@@ -20,12 +20,16 @@ public class Client {
 	@Id
 	private BigInteger idClient;
 	private String name;
+	private int numberBills;
+	private float totalPending;
 	
 	//Metodos constructores
-	public Client(BigInteger idClient, String name) {
+	public Client(BigInteger idClient, String name, int numberBills, float totalPending) {
 		super();
 		this.idClient = idClient;
 		this.name = name;
+		this.numberBills = numberBills;
+		this.totalPending = totalPending;
 	}
 
 	public Client() {
@@ -47,5 +51,21 @@ public class Client {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public int getNumberBills() {
+		return numberBills;
+	}
+
+	public void setNumberBills(int numberBills) {
+		this.numberBills = numberBills;
+	}
+
+	public float getTotalPending() {
+		return totalPending;
+	}
+
+	public void setTotalPending(float totalPending) {
+		this.totalPending = totalPending;
 	}
 }

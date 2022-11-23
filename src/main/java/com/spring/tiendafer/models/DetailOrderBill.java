@@ -25,6 +25,7 @@ public class DetailOrderBill {
 	private int orderedQuantity;
 	private int receivedQuantity;
 	private int unitValue;
+	private float percentageProfit;
 	private int totalValue;
 	@OneToOne
 	@JoinColumn(name = "id_product")
@@ -39,11 +40,12 @@ public class DetailOrderBill {
 	}
 
 	public DetailOrderBill(int orderedQuantity, int receivedQuantity, int unitValue,
-			int totalValue, Product product, OrderBill orderBill) {
+			float percentageProfit, int totalValue, Product product, OrderBill orderBill) {
 		super();
 		this.orderedQuantity = orderedQuantity;
 		this.receivedQuantity = receivedQuantity;
 		this.unitValue = unitValue;
+		this.percentageProfit = percentageProfit;
 		this.totalValue = totalValue;
 		this.product = product;
 		this.orderBill = orderBill;
@@ -80,6 +82,14 @@ public class DetailOrderBill {
 
 	public void setUnitValue(int unitValue) {
 		this.unitValue = unitValue;
+	}
+
+	public float getPercentageProfit() {
+		return percentageProfit;
+	}
+
+	public void setPercentageProfit(float percentageProfit) {
+		this.percentageProfit = percentageProfit;
 	}
 
 	public int getTotalValue() {
