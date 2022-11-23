@@ -142,9 +142,7 @@ public class DetailClientBillController {
 				clientBill.setPendingValue(clientBill.getPendingValue() + detailClientBill.getTotalValue());
 				
 				Client client = clientRepository.findById(clientBill.getClient().getIdClient()).orElse(null);
-				System.out.println("CREATE 1: " + client.getTotalPending());
 				client.setTotalPending(client.getTotalPending() + detailClientBill.getTotalValue());
-				System.out.println("CREATE 2: " + client.getTotalPending());
 				clientRepository.save(client);
 			}
 			ClientBill clientBillAnswer = clientBillRepository.save(clientBill);
